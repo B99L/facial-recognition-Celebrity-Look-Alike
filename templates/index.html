@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Celebrity-Look-Alike</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #1a1a2e;
+            padding: 50px;
+            color: #eee;
+        }
+
+        h2 {
+            color: #e94560;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        form {
+            margin-top: 20px;
+            background-color: #1a1a2e;
+            border-radius: 1px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+            width: 300px; /* Beispiel für eine feste Breite */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        label {
+            padding: 10px;
+            background-color: #e94560;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        label:hover {
+            background-color: #9a031e;
+        }
+
+        input[type="submit"] {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #9a031e;
+        }
+
+        #images-container {
+            /* Entfernen von pointer-events: none; */
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        #image-display {
+            /* Anpassen der top-Eigenschaft */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            top: 0px;
+        }
+
+
+        #images-container img {
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.7);
+            transition: all 0.3s ease;
+            pointer-events: auto; /* Klickereignisse werden wieder aktiviert */
+        }
+
+        #images-container img:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.9);
+        }
+          #identity-name {
+            font-size: 2em;
+            font-weight: bold;
+            color: #16c79a;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+    </style>
+</head>
+
+
+<body>
+<h2>Celebrity-Look-Alike</h2>
+<!-- Dieses Formular ermöglicht es dem Benutzer, eine Bilddatei hochzuladen -->
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <h3>Select image to upload:</h3>
+  <label for="file">Choose file</label>
+  <!-- Dies ist das tatsächliche Eingabefeld für die Datei, es ist aber durch CSS versteckt und das Label wird als benutzerdefinierter Knopf verwendet -->
+  <input type="file" name="file" id="file" accept="image/*">
+  <!-- Dies ist der Absenden-Button für das Formular -->
+  <input type="submit" value="Upload Image" name="submit">
+</form>
+
+<!-- Dieser Bereich wird verwendet, um die hochgeladenen Bilder anzuzeigen -->
+<div id="image-display">
+    <div id="images-container">
+        <div id="user-image-container">
+            <!-- Das Benutzerbild wird hier eingefügt -->
+        </div>
+        <div id="similar-image-container">
+            <!-- Das ähnliche Bild wird hier eingefügt -->
+        </div>
+    </div>
+    <div id="identity-name">
+        <!-- Der Name wird hier eingefügt -->
+    </div>
+</div>
+
+
+
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var formData = new FormData(this);
+  fetch('/upload', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    var userImageContainer = document.querySelector('#user-image-container');
+    userImageContainer.innerHTML = '';
+    var userImg = document.createElement('img');
+    userImg.src = '/uploads/' + data.userImage + '?t=' + new Date().getTime();
+    userImageContainer.appendChild(userImg);
+
+    var similarImageContainer = document.querySelector('#similar-image-container');
+    similarImageContainer.innerHTML = '';
+    var similarImg = document.createElement('img');
+    similarImg.src = '/uploads/' + data.similarImage + '?t=' + new Date().getTime();
+    similarImageContainer.appendChild(similarImg);
+
+    var identityName = document.querySelector('#identity-name');
+    identityName.textContent = data.identityName;
+  });
+});
+
+</script>
+
+</body>
+</html>
